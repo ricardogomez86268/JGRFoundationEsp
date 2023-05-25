@@ -10,6 +10,8 @@ namespace JGRFoundation.API.Data
         {
         }
 
+        public DbSet<Appliance> HomeAppliances { get; set; }
+        public DbSet<Battery> Batteries { get; set; }
         public DbSet<Category> Categories { get; set; }
         
 
@@ -17,6 +19,8 @@ namespace JGRFoundation.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Appliance>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<Battery>().HasIndex(x => x.BatteryReference).IsUnique();
             modelBuilder.Entity<Category>().HasIndex(x => x.Name).IsUnique();
         }
     }
