@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JGRFoundation.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230524175815_inicial")]
-    partial class inicial
+    [Migration("20230525044059_pruebaintegracion")]
+    partial class pruebaintegracion
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,13 +25,16 @@ namespace JGRFoundation.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("JGRFoundation.Shared.Entities.Category", b =>
+            modelBuilder.Entity("JGRFoundation.Shared.Entities.Appliance", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AverageDailyConsumption")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -43,7 +46,86 @@ namespace JGRFoundation.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Categories");
+                    b.ToTable("HomeAppliances");
+                });
+
+            modelBuilder.Entity("JGRFoundation.Shared.Entities.Battery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BatteryReference")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CapacityAmperageHour")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Voltage")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BatteryReference")
+                        .IsUnique();
+
+                    b.ToTable("Batteries");
+                });
+
+            modelBuilder.Entity("JGRFoundation.Shared.Entities.Home", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Coordinate")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Homes");
+                });
+
+            modelBuilder.Entity("JGRFoundation.Shared.Entities.HomeDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ApplianceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HomeId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("QuantityByAppliance")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplianceId");
+
+                    b.HasIndex("HomeId");
+
+                    b.ToTable("HomeDetail");
                 });
 
             modelBuilder.Entity("JGRFoundation.Shared.Entities.Investor", b =>
@@ -92,6 +174,36 @@ namespace JGRFoundation.API.Migrations
                         .IsUnique();
 
                     b.ToTable("Panels");
+                });
+
+            modelBuilder.Entity("JGRFoundation.Shared.Entities.TemporalHome", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ApplianceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Coordinate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("QuantityByAppliance")
+                        .HasColumnType("real");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplianceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TemporalHomes");
                 });
 
             modelBuilder.Entity("JGRFoundation.Shared.Entities.User", b =>
@@ -318,6 +430,51 @@ namespace JGRFoundation.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("JGRFoundation.Shared.Entities.Home", b =>
+                {
+                    b.HasOne("JGRFoundation.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("JGRFoundation.Shared.Entities.HomeDetail", b =>
+                {
+                    b.HasOne("JGRFoundation.Shared.Entities.Appliance", "Appliance")
+                        .WithMany()
+                        .HasForeignKey("ApplianceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JGRFoundation.Shared.Entities.Home", "Home")
+                        .WithMany("HomeDetails")
+                        .HasForeignKey("HomeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appliance");
+
+                    b.Navigation("Home");
+                });
+
+            modelBuilder.Entity("JGRFoundation.Shared.Entities.TemporalHome", b =>
+                {
+                    b.HasOne("JGRFoundation.Shared.Entities.Appliance", "Appliance")
+                        .WithMany()
+                        .HasForeignKey("ApplianceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JGRFoundation.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Appliance");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -367,6 +524,11 @@ namespace JGRFoundation.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("JGRFoundation.Shared.Entities.Home", b =>
+                {
+                    b.Navigation("HomeDetails");
                 });
 #pragma warning restore 612, 618
         }
