@@ -74,6 +74,38 @@ namespace JGRFoundation.API.Data
             return user;
         }
 
+        private Task CheckHomeAppliancesAsync()
+        {
+            if (!_context.HomeAppliances.Any())
+            {
+                _context.HomeAppliances.AddRange(new List<Appliance>()
+                {
+                    new Appliance() { Name = "Nevera" ,AverageDailyConsumption = 1600},
+                    new Appliance() { Name = "Lavadora" ,AverageDailyConsumption = 500 },
+                    new Appliance() { Name = "Televisor" ,AverageDailyConsumption = 1200},
+                    new Appliance() { Name = "Licuadora" ,AverageDailyConsumption = 20}
+                });
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private Task CheckBatteriesAsync()
+        {
+            if (!_context.Batteries.Any())
+            {
+                _context.Batteries.AddRange(new List<Battery>()
+                {
+                    new Battery() { BatteryReference = "BatSolar100",Voltage=100, CapacityAmperageHour = 12 },
+                    new Battery() { BatteryReference = "BatSolar200",Voltage=200, CapacityAmperageHour = 12 },
+                    new Battery() { BatteryReference = "BatSolar300",Voltage=300, CapacityAmperageHour = 12 },
+                    new Battery() { BatteryReference = "BatSolar400",Voltage=400, CapacityAmperageHour = 12 }
+                });
+            }
+
+            return Task.CompletedTask;
+        }
+
         private async Task CheckCategoriesAsync()
         {
             if (!_context.Categories.Any())
