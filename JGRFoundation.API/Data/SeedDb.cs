@@ -84,6 +84,16 @@ namespace JGRFoundation.API.Data
                 {
                     new Investor() { InvestorReference = "Invest1200" ,RatedPower = 1200},
                     new Investor() { InvestorReference = "Invest3400" ,RatedPower = 3400}
+        private Task CheckHomeAppliancesAsync()
+        {
+            if (!_context.HomeAppliances.Any())
+            {
+                _context.HomeAppliances.AddRange(new List<Appliance>()
+                {
+                    new Appliance() { Name = "Nevera" ,AverageDailyConsumption = 1600},
+                    new Appliance() { Name = "Lavadora" ,AverageDailyConsumption = 500 },
+                    new Appliance() { Name = "Televisor" ,AverageDailyConsumption = 1200},
+                    new Appliance() { Name = "Licuadora" ,AverageDailyConsumption = 20}
                 });
             }
 
@@ -99,6 +109,16 @@ namespace JGRFoundation.API.Data
                     new Panel() { PanelReference = "Panel400",Power = 400},
                     new Panel() { PanelReference = "Panel500",Power = 500 },
                     new Panel() { PanelReference = "Panel600",Power = 600 }
+        private Task CheckBatteriesAsync()
+        {
+            if (!_context.Batteries.Any())
+            {
+                _context.Batteries.AddRange(new List<Battery>()
+                {
+                    new Battery() { BatteryReference = "BatSolar100",Voltage=100, CapacityAmperageHour = 12 },
+                    new Battery() { BatteryReference = "BatSolar200",Voltage=200, CapacityAmperageHour = 12 },
+                    new Battery() { BatteryReference = "BatSolar300",Voltage=300, CapacityAmperageHour = 12 },
+                    new Battery() { BatteryReference = "BatSolar400",Voltage=400, CapacityAmperageHour = 12 }
                 });
             }
 
