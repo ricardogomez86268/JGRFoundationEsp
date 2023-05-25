@@ -8,7 +8,10 @@ namespace JGRFoundation.API.Data
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
+
         }
+        public DbSet<Investor> Investors { get; set; }
+        public DbSet<Panel> Panels { get; set; }
 
         public DbSet<Appliance> HomeAppliances { get; set; }
         public DbSet<Battery> Batteries { get; set; }
@@ -19,6 +22,8 @@ namespace JGRFoundation.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Investor>().HasIndex(x => x.InvestorReference).IsUnique();
+            modelBuilder.Entity<Panel>().HasIndex(x => x.PanelReference).IsUnique();
             modelBuilder.Entity<Appliance>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<Battery>().HasIndex(x => x.BatteryReference).IsUnique();
             modelBuilder.Entity<Category>().HasIndex(x => x.Name).IsUnique();
