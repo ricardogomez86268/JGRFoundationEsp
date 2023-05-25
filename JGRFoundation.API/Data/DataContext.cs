@@ -8,7 +8,10 @@ namespace JGRFoundation.API.Data
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
+
         }
+        public DbSet<Investor> Investors { get; set; }
+        public DbSet<Panel> Panels { get; set; }
 
         public DbSet<Category> Categories { get; set; }
         
@@ -16,6 +19,9 @@ namespace JGRFoundation.API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Investor>().HasIndex(x => x.InvestorReference).IsUnique();
+            modelBuilder.Entity<Panel>().HasIndex(x => x.PanelReference).IsUnique();
 
             modelBuilder.Entity<Category>().HasIndex(x => x.Name).IsUnique();
         }

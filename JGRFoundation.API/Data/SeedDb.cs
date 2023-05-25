@@ -27,6 +27,8 @@ namespace JGRFoundation.API.Data
         {
             await _context.Database.EnsureCreatedAsync();
             await CheckCategoriesAsync();
+            await CheckInvestorsAsync();
+            await CheckPanelsAsync();
             await CheckRolesAsync();
             await CheckUserAsync("1010", "Ricardo", "Gómez Gallego", "Rico@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", "admin.jpeg", UserType.Admin);
             await CheckUserAsync("1010", "Juan Guillermo", "Palma Cerón", "Juan@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", "admin.jpeg", UserType.Admin);
@@ -74,6 +76,34 @@ namespace JGRFoundation.API.Data
             return user;
         }
 
+        private Task CheckInvestorsAsync()
+        {
+            if (!_context.Investors.Any())
+            {
+                _context.Investors.AddRange(new List<Investor>()
+                {
+                    new Investor() { InvestorReference = "Invest1200" ,RatedPower = 1200},
+                    new Investor() { InvestorReference = "Invest3400" ,RatedPower = 3400}
+                });
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private Task CheckPanelsAsync()
+        {
+            if (!_context.Panels.Any())
+            {
+                _context.Panels.AddRange(new List<Panel>()
+                {
+                    new Panel() { PanelReference = "Panel400",Power = 400},
+                    new Panel() { PanelReference = "Panel500",Power = 500 },
+                    new Panel() { PanelReference = "Panel600",Power = 600 }
+                });
+            }
+
+            return Task.CompletedTask;
+        }
         private async Task CheckCategoriesAsync()
         {
             if (!_context.Categories.Any())
