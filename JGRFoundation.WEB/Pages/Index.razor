@@ -1,18 +1,212 @@
 ﻿@page "/"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
 
-<PageTitle>Index</PageTitle>
+<style type="text/css">
+    .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid lightgray;
+        box-shadow: 2px 2px 8px 4px #d3d3d3d1;
+        border-radius: 15px;
+        font-family: sans-serif;
+        margin: 5px;
+    }
+</style>
 
-<AuthorizeView Roles="Admin">
-    <Authorized>
-        <p>Estas autenticado y autorizado, @context.User.Identity?.Name</p>
-    </Authorized>
-    <NotAuthorized>
-        <p>No estas autorizado</p>
-    </NotAuthorized>
-</AuthorizeView>
+@if (HomeAppliances is null)
+{
+    <div class="spinner" />
+}
+else
+{
+    <div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
+        <div>
+            <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Buscar electrodomestico..." @bind-value="Filter" />
+        </div>
+        <div class="mx-1">
+            <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync"><i class="oi oi-terminal" /> Filtrar</button>
+            <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync"><i class="oi oi-trash" /> Limpiar</button>
+        </div>
+        <AuthorizeView>
+            <Authorized>
+                @if (counter > 0)
+                {
+                    <a href="/HomeCreate" class="btn btn-primary">Ver electrodomesticos seleccionados (@counter)</a>
+                }
+            </Authorized>
+        </AuthorizeView>
+    </div>
 
-<h1>Hello, ITM!</h1>
+    <Pagination CurrentPage="currentPage"
+            TotalPages="totalPages"
+            SelectedPage="SelectedPageAsync" />
 
-Welcome to your new app.
+    <div class="row row-cols-1 row-cols-md-4 g-4 mt-1">
+        @foreach (var appliance in HomeAppliances!)
+        {
+            <div class="col">
+                <div class="card h-100">
+              @*      <div class="text-center zoom">
+                        <img src="@appliance.MainImage" style="height:150px; max-width:200px;" class="text-center" alt=@appliance.Name />
+                    </div>*@
+                    <div class="card-body">
+                        <h5 class="card-title text-navy"> @appliance.Name</h5>
+                        <h5 class="text-muted">@($"{appliance.AverageDailyConsumption:N2}")</h5>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button class="btn btn-sm btn-primary" @onclick=@(() => AddToHomeAsync(appliance.Id))><i class="oi oi-plus" /> Agregar consumo al hogar</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private int currentPage = 1;
+    private int totalPages;
+    private int counter = 0;
+    private bool isAuthenticated;
+
+    public List<Appliance>? HomeAppliances { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Page { get; set; } = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Filter { get; set; } = "";
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    protected async override Task OnParametersSetAsync()
+    {
+        await CheckIsAuthenticatedAsync();
+        await LoadCounterAsync();
+    }
+
+    private async Task CheckIsAuthenticatedAsync()
+    {
+        var authenticationState = await authenticationStateTask;
+        isAuthenticated = authenticationState.User.Identity!.IsAuthenticated;
+    }
+
+    private async Task LoadCounterAsync()
+    {
+        if (!isAuthenticated)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.Get<int>("/api/temporalHomes/count");
+        if (responseHttp.Error)
+        {
+            return;
+        }
+        counter = responseHttp.Response;
+    }
+
+    private async Task SelectedPageAsync(int page)
+    {
+        currentPage = page;
+        await LoadAsync(page);
+    }
+
+    private async Task LoadAsync(int page = 1)
+    {
+        if (!string.IsNullOrWhiteSpace(Page))
+        {
+            page = Convert.ToInt32(Page);
+        }
+
+        string url1 = string.Empty;
+        string url2 = string.Empty;
+
+        if (string.IsNullOrEmpty(Filter))
+        {
+            url1 = $"api/homeAppliances?page={page}&RecordsNumber=8";
+            url2 = $"api/homeAppliances/totalPages/?RecordsNumber=8";
+        }
+        else
+        {
+            url1 = $"api/homeAppliances?page={page}&filter={Filter}&RecordsNumber=8";
+            url2 = $"api/homeAppliances/totalPages?filter={Filter}&RecordsNumber=8";
+        }
+
+        try
+        {
+            var responseHppt = await repository.Get<List<Appliance>>(url1);
+            var responseHppt2 = await repository.Get<int>(url2);
+            HomeAppliances = responseHppt.Response!;
+            totalPages = responseHppt2.Response!;
+        }
+        catch (Exception ex)
+        {
+            await sweetAlertService.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+    }
+
+    private async Task CleanFilterAsync()
+    {
+        Filter = string.Empty;
+        await ApplyFilterAsync();
+    }
+
+    private async Task ApplyFilterAsync()
+    {
+        int page = 1;
+        await LoadAsync(page);
+        await SelectedPageAsync(page);
+    }
+
+    private async Task AddToHomeAsync(int applianceId)
+    {
+        if (!isAuthenticated)
+        {
+            navigationManager.NavigateTo("/Login");
+            var toast1 = sweetAlertService.Mixin(new SweetAlertOptions
+                {
+                    Toast = true,
+                    Position = SweetAlertPosition.TopEnd,
+                    ShowConfirmButton = false,
+                    Timer = 5000
+                });
+            await toast1.FireAsync(icon: SweetAlertIcon.Error, message: "Debes haber iniciado sesión para poder agregar electrodomesticos al hogar.");
+            return;
+        }
+
+        var temporalHomeDTO = new TemporalHomeDTO
+            {
+                ApplianceId = applianceId
+            };
+
+        var httpResponse = await repository.Post("/api/temporalHomes", temporalHomeDTO);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await LoadCounterAsync();
+
+        var toast2 = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.TopEnd,
+                ShowConfirmButton = false,
+                Timer = 5000
+            });
+        await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Electrodomestico agregado al hogar.");
+    }
+}
