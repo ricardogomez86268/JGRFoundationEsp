@@ -21,6 +21,7 @@ namespace JGRFoundation.API.Controller
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.HomeAppliances
@@ -39,6 +40,7 @@ namespace JGRFoundation.API.Controller
 
 
         [HttpGet("totalPages")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.HomeAppliances
@@ -55,6 +57,7 @@ namespace JGRFoundation.API.Controller
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetAsync(int id)
         {
             var appliance = await _context.HomeAppliances
