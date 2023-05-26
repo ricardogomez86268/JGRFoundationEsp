@@ -27,18 +27,14 @@
     <Folder Include="Auth\" />
     <Folder Include="Helpers\" />
     <Folder Include="Pages\Auth\" />
-    <Folder Include="Pages\Categorie\" />
     <Folder Include="Repositories\" />
     <Folder Include="Pages\Investors\" />
     <Folder Include="Pages\Panels\" />
+    <Folder Include="Pages\Batteries\" />
+    <Folder Include="Pages\HomeAppliances\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\JGRFoundation.Shared\JGRFoundation.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Pages\Investors\" />
-    <None Remove="Pages\Panels\" />
   </ItemGroup>
 </Project>

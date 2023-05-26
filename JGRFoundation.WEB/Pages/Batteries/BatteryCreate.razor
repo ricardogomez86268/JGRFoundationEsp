@@ -1,0 +1,47 @@
+﻿@page "/batteries/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Crear bateria</h3>
+
+<BatteryForm @ref="batteryForm" Battery="battery" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private Battery battery = new();
+    private BatteryForm? batteryForm;
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int StateId { get; set; }
+
+    private async Task CreateAsync()
+    {
+        var httpResponse = await repository.Post("/api/batteries", battery);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+        {
+            Toast = true,
+            Position = SweetAlertPosition.TopEnd,
+            ShowConfirmButton = false,
+            Timer = 5000
+        });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Panel creada con éxito.");
+    }
+
+    private void Return()
+    {
+        batteryForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/batteries");
+    }
+}
