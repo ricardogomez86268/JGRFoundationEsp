@@ -73,23 +73,7 @@ namespace JGRFoundation.API.Data
             return user;
         }
 
-        private Task CheckBatteriesAsync()
-        {
-            if (!_context.Batteries.Any())
-            {
-                _context.Batteries.AddRange(new List<Battery>()
-                {
-                    new Battery() { BatteryReference = "BatSolar100",Voltage=100, CapacityAmperageHour = 12 },
-                    new Battery() { BatteryReference = "BatSolar200",Voltage=200, CapacityAmperageHour = 12 },
-                    new Battery() { BatteryReference = "BatSolar300",Voltage=300, CapacityAmperageHour = 12 },
-                    new Battery() { BatteryReference = "BatSolar400",Voltage=400, CapacityAmperageHour = 12 }
-                });
-            }
-
-            return Task.CompletedTask;
-        }
-
-
+      
         private Task CheckHomeAppliancesAsync()
         {
             if (!_context.HomeAppliances.Any())
@@ -121,14 +105,29 @@ namespace JGRFoundation.API.Data
         }
 
         private Task CheckPanelsAsync()
-        {
-            if (!_context.Panels.Any())
-            {
-                _context.Panels.AddRange(new List<Panel>()
                 {
-                    new Panel() { PanelReference = "Panel400",Power = 400},
-                    new Panel() { PanelReference = "Panel500",Power = 500 },
-                    new Panel() { PanelReference = "Panel600",Power = 600 }
+                    if (!_context.Panels.Any())
+                    {
+                        _context.Panels.AddRange(new List<Panel>()
+                        {
+                            new Panel() { PanelReference = "Panel400", Power = 400 },
+                            new Panel() { PanelReference = "Panel500", Power = 500 },
+                            new Panel() { PanelReference = "Panel600", Power = 600 }
+                        });
+                    }
+            return Task.CompletedTask;
+        }
+
+        private Task CheckBatteriesAsync()
+        {
+            if (!_context.Batteries.Any())
+            {
+                _context.Batteries.AddRange(new List<Battery>()
+                {
+                    new Battery() { BatteryReference = "BatSolar100",Voltage=100, CapacityAmperageHour = 12 },
+                    new Battery() { BatteryReference = "BatSolar200",Voltage=200, CapacityAmperageHour = 12 },
+                    new Battery() { BatteryReference = "BatSolar300",Voltage=300, CapacityAmperageHour = 12 },
+                    new Battery() { BatteryReference = "BatSolar400",Voltage=400, CapacityAmperageHour = 12 }                 
                 });
             }
 

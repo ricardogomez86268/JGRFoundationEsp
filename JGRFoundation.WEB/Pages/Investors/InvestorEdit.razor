@@ -1,0 +1,72 @@
+﻿@page "/investors/edit/{InvestorId:int}"
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Editar Inversor</h3>
+
+@if (investor is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <InvestorForm @ref="investorForm" Investor="investor" OnValidSubmit="EditAsync" ReturnAction="Return" />
+}
+
+@code {
+    private Investor? investor;
+    private InvestorForm? investorForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+    [Parameter]
+    public int InvestorId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHTTP = await repository.Get<Investor>($"api/investors/{InvestorId}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("investors");
+                return;
+            }
+            var messageError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            return;
+        }
+        investor = responseHTTP.Response;
+    }
+
+    private async Task EditAsync()
+    {
+        var responseHTTP = await repository.Put("api/investors", investor);
+
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            return;
+        }
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+        {
+            Toast = true,
+            Position = SweetAlertPosition.TopEnd,
+            ShowConfirmButton = false,
+            Timer = 5000
+        });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Inversor modificado con éxito.");
+    }
+
+    private void Return()
+    {
+        investorForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo("investors");
+    }
+}

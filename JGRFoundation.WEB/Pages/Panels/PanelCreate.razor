@@ -1,0 +1,43 @@
+﻿@page "/panels/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Crear Panel</h3>
+
+<PanelForm @ref="panelForm" Panel="panel" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private Panel panel = new();
+    private PanelForm? panelForm;
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+    private async Task CreateAsync()
+    {
+        var responseHttp = await repository.Post("/api/panels", panel);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+        {
+            Toast = true,
+            Position = SweetAlertPosition.TopEnd,
+            ShowConfirmButton = false,
+            Timer = 5000
+        });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Panel creada con éxito.");
+    }
+
+    private void Return()
+    {
+        panelForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo("/panels");
+    }
+}
