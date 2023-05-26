@@ -1,0 +1,43 @@
+﻿@page "/homeAppliances/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Crear Electrodomestico</h3>
+
+<ApplianceForm @ref="applianceForm" Appliance="appliance" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private Appliance appliance = new();
+    private ApplianceForm? applianceForm;
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+    private async Task CreateAsync()
+    {
+        var responseHttp = await repository.Post("/api/homeAppliances", appliance);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+        {
+            Toast = true,
+            Position = SweetAlertPosition.TopEnd,
+            ShowConfirmButton = false,
+            Timer = 5000
+        });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Electrodomestico creada con éxito.");
+    }
+
+    private void Return()
+    {
+        applianceForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo("/homeAppliances");
+    }
+}

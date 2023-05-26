@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JGRFoundation.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230525044059_pruebaintegracion")]
-    partial class pruebaintegracion
+    [Migration("20230526013359_createdatabase")]
+    partial class createdatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
