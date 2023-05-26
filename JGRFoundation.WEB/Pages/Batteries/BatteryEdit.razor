@@ -1,0 +1,73 @@
+﻿@page "/batteries/edit/{BatteryId:int}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Editar categoría</h3>
+
+@if (battery is null)
+{
+    <div class="spinner" />
+}
+else
+{
+    <BatteryForm @ref="batteryForm" Battery="battery" OnValidSubmit="EditAsync" ReturnAction="Return" />
+}
+
+@code {
+    private Battery? battery;
+    private BatteryForm? batteryForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int BatteryId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.Get<Battery>($"/api/batteries/{BatteryId}");
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/batteries");
+                return;
+            }
+
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        battery = responseHttp.Response;
+    }
+
+    private async Task EditAsync()
+    {
+        var responseHttp = await repository.Put("/api/batteries", battery);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+        {
+            Toast = true,
+            Position = SweetAlertPosition.TopEnd,
+            ShowConfirmButton = false,
+            Timer = 5000
+        });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Bateria modificado con éxito.");
+    }
+
+    private void Return()
+    {
+        batteryForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/batteries");
+    }
+}

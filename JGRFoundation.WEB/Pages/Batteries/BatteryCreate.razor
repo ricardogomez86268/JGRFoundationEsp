@@ -19,7 +19,7 @@
 
     private async Task CreateAsync()
     {
-        var httpResponse = await repository.PostAsync("/api/batteries", battery);
+        var httpResponse = await repository.Post("/api/batteries", battery);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();

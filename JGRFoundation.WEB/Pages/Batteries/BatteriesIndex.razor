@@ -140,8 +140,8 @@ else
 
         try
         {
-            var responseHppt = await repository.GetAsync<List<Battery>>(url1);
-            var responseHppt2 = await repository.GetAsync<int>(url2);
+            var responseHppt = await repository.Get<List<Battery>>(url1);
+            var responseHppt2 = await repository.Get<int>(url2);
             batteries = responseHppt.Response!;
             totalPages = responseHppt2.Response!;
         }
@@ -168,7 +168,7 @@ else
             return;
         }
 
-        var responseHTTP = await repository.DeleteAsync($"api/batteries/{categoryId}");
+        var responseHTTP = await repository.Delete($"api/batteries/{categoryId}");
 
         if (responseHTTP.Error)
         {
