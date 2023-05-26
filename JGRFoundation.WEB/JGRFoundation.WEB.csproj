@@ -30,6 +30,7 @@
     <Folder Include="Pages\Categorie\" />
     <Folder Include="Repositories\" />
     <Folder Include="Pages\Investors\" />
+    <Folder Include="Pages\Panels\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,5 +39,6 @@
 
   <ItemGroup>
     <None Remove="Pages\Investors\" />
+    <None Remove="Pages\Panels\" />
   </ItemGroup>
 </Project>
