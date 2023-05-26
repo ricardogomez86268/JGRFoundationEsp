@@ -28,7 +28,6 @@
     <Folder Include="Helpers\" />
     <Folder Include="Pages\Auth\" />
     <Folder Include="Pages\Categorie\" />
-    <Folder Include="Pages\Home\" />
     <Folder Include="Pages\NewFolder\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
