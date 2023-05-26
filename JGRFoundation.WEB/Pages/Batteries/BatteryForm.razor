@@ -1,0 +1,93 @@
+﻿@inject SweetAlertService sweetAlertService
+
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
+
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <span>
+                <i class="oi oi-star" /> Crear Nuevo Bateria
+                <a class="btn btn-sm btn-success float-end" href="/investors"><i class="oi oi-arrow-thick-left" /> Regresar</a>
+                <button class="btn btn-sm btn-primary float-end mx-2" type="submit"><i class="oi oi-check" /> Guardar Cambios</button>
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Bateria:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Battery.BatteryReference" />
+                            <ValidationMessage For="@(() => Battery.BatteryReference)" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Voltaje:</label>
+                        <div>
+                            <InputNumber class="form-control" @bind-Value="@Battery.Voltage" />
+                            <ValidationMessage For="@(() => Battery.Voltage)" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Capacidad amperaje por hora:</label>
+                        <div>
+                            <InputNumber class="form-control" @bind-Value="@Battery.CapacityAmperageHour" />
+                            <ValidationMessage For="@(() => Battery.CapacityAmperageHour)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private EditContext editContext = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Battery Battery { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfully { get; set; }
+
+    protected override void OnInitialized()
+    {
+        editContext = new(Battery);
+    }
+
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var formWasMofied = editContext.IsModified();
+        if (!formWasMofied || FormPostedSuccessfully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+        {
+            Title = "Confirmación",
+            Text = "¿Deseas abandonar la página y perder los cambios?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            CancelButtonText = "No",
+            ConfirmButtonText = "Si"
+        });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+    }
+}
