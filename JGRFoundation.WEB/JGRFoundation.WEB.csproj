@@ -29,7 +29,7 @@
     <Folder Include="Pages\Auth\" />
     <Folder Include="Pages\Categorie\" />
     <Folder Include="Repositories\" />
-    <Folder Include="Batteries\" />
+    <Folder Include="Pages\Batteries\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Batteries\" />
+    <None Remove="Pages\Batteries\" />
   </ItemGroup>
 </Project>
