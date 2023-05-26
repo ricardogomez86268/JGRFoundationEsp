@@ -2,18 +2,18 @@
 
 <AuthorizeView>
     <Authorized>
-        Hola, <a href="EditUser" class="nav-link btn btn-link">@context.User.Identity!.Name</a>
+        Hola, <a type="button" href="EditUser" class="btn btn-outline-success">@context.User.Identity!.Name</a>
         @if (!string.IsNullOrEmpty(photoUser))
         {
             <div class="mx-2">
                 <img src="@photoUser" width="50" height="50" style="border-radius:50%" />
             </div>
         }
-        <a href="Logout" class="nav-link btn btn-link">Cerrar Sesión</a>
+        <a type="button" class="btn btn-outline-warning" href="Logout"><i class="oi oi-link-broken" /> Cerrar Sesión</a>
     </Authorized>
     <NotAuthorized>
-        <a href="Register" class="nav-link btn btn-link">Registro</a>
-        <a href="Login" class="nav-link btn btn-link">Iniciar Sesión</a>
+        <a type="button" class="btn btn-outline-success" href="Register"><i class="oi oi-link-intact" /> Registro</a>
+        <a type="button" class="btn btn-outline-primary" href="Login"><i class="oi oi-key" /> Iniciar Sesión</a>
     </NotAuthorized>
 </AuthorizeView>
 

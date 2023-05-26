@@ -1,0 +1,178 @@
+﻿@page "/HomeCreate"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin, User")]
+ 
+@if (temporalHomes is null)
+{
+    <div class="spinner" />
+}
+else
+{
+    <GenericList MyList="temporalHomes">
+        <RecordsComplete>
+            <div class="card">
+                <div class="card-header">
+                    <span>
+                        <i class="oi oi-calculator" /> Hogar
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-4">
+                            <h3>Cantidad de electrodomesticos: <strong>@($"{sumQuantity}")</strong></h3>
+                        </div>
+                        <div class="col-4">
+                            <h3>Consumo total: <strong>@($"{sumValue:N2}")</strong></h3>
+                        </div>
+                    </div>
+                    <EditForm Model="HomeDTO" OnValidSubmit="ConfirmHogarAsync">
+                        <DataAnnotationsValidator />
+                        <div class="mb-3">
+                            <label>Coordenada:</label>
+                            <div>
+                                <InputText class="form-control" @bind-Value="@HomeDTO.Coordinate" />
+                                <ValidationMessage For="@(() => HomeDTO.Coordinate)" />
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mb-3" type="submit"><i class="oi oi-check" /> Confirmar creacion hogar</button>
+                    </EditForm>
+                    <table id="TablasGrid">
+                        <thead>
+                            <tr>
+                                <th>Electrodomestico</th>
+                                <th>Cantidad</th>
+                                <th>Consumo</th>
+                                <th style="width:200px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var temporalHome in temporalHomes)
+                            {
+                                <tr>
+                                    <td>
+                                        @temporalHome.Appliance!.Name
+                                    </td>
+                                    <td>
+                                        @($"{temporalHome.QuantityByAppliance}")
+                                    </td>
+                                    <td>
+                                        @($"{temporalHome.ApplianceConsumption:N2}")
+                                    </td>
+                                   <td>
+                                        @temporalHome.Coordinate
+                                    </td>
+                                  @*  <td>
+                                        <img src="@temporalHome.Product!.MainImage" style="width:100px;" />
+                                    </td>*@
+                                    <td>
+                                        <button class="btn btn-danger" @onclick=@(() => DeleteAsync(temporalHome.Id))><i class="oi oi-delete" /> Borrar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </RecordsComplete>
+    </GenericList>
+}
+
+@code {
+    public List<TemporalHome>? temporalHomes { get; set; }
+    private float sumQuantity;
+    private decimal sumValue;
+
+    public HomeDTO HomeDTO { get; set; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        try
+        {
+            var responseHppt = await repository.Get<List<TemporalHome>>("api/temporalHomes");
+            temporalHomes = responseHppt.Response!;
+            sumQuantity = temporalHomes.Sum(x => x.QuantityByAppliance);
+            sumValue = temporalHomes.Sum(x => x.ApplianceConsumption);
+        }
+        catch (Exception ex)
+        {
+            await sweetAlertService.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+    }
+
+    private async Task ConfirmHogarAsync()
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Esta seguro que quieres confirmar el hogar?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var httpResponse = await repository.Post("/api/homes", HomeDTO);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        navigationManager.NavigateTo("/HomeCreateConfirmed");
+    }
+
+    private async Task DeleteAsync(int temporalHomeId)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Esta seguro que quieres borrar el registro?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHTTP = await repository.Delete($"api/temporalHomes/{temporalHomeId}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/");
+                return;
+            }
+
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            return;
+        }
+
+        await LoadAsync();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.TopEnd,
+                ShowConfirmButton = false,
+                Timer = 5000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Electrodomestico eliminado del hogar.");
+    }
+}

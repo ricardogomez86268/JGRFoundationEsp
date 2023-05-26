@@ -27,7 +27,6 @@
     <Folder Include="Auth\" />
     <Folder Include="Helpers\" />
     <Folder Include="Pages\Auth\" />
-    <Folder Include="Pages\Categories\" />
     <Folder Include="Repositories\" />
     <Folder Include="Pages\Batteries\" />
     <Folder Include="Pages\HomeAppliances\" />
