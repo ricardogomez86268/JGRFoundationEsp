@@ -136,8 +136,8 @@ else
 
         try
         {
-            var responseHppt = await repository.GetAsync<List<Appliance>>(url1);
-            var responseHppt2 = await repository.GetAsync<int>(url2);
+            var responseHppt = await repository.Get<List<Appliance>>(url1);
+            var responseHppt2 = await repository.Get<int>(url2);
             homeAppliances = responseHppt.Response!;
             totalPages = responseHppt2.Response!;
         }
@@ -164,7 +164,7 @@ else
             return;
         }
 
-        var responseHTTP = await repository.DeleteAsync($"api/homeAppliances/{categoryId}");
+        var responseHTTP = await repository.Delete($"api/homeAppliances/{categoryId}");
 
         if (responseHTTP.Error)
         {
