@@ -19,7 +19,7 @@ a, .btn-link {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -158,13 +158,57 @@ a, .btn-link {
             background-color: #08c
         }
 
-.multiple-selector-botones {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 5px
+
+
+.card {
+    background-color: #D1DCE4;
 }
 
-    .multiple-selector-botones button {
-        margin: 5px;
+.card-body {
+    background-color: #EEF2F5;
+}
+
+
+#TablasGrid {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-spacing: 0;
+    width: 100%;
+    border-radius: 6px 6px 0 0;
+}
+
+    #TablasGrid td,
+    #TablasGrid th {
+        text-align: center;
+        padding: 4px;
+    }
+
+    #TablasGrid tr:nth-child(even) {
+        background-color: #FFFFFF;
+    }
+
+    #TablasGrid tr:nth-child(2n+1) {
+        background-color: #ECF7FF;
+    }
+
+    #TablasGrid tr:hover {
+        background: #FBFAE7;
+        transition: all 0.1s ease-in-out;
+    }
+
+    #TablasGrid th:first-child {
+        border-radius: 6px 0 0 0;
+    }
+
+    #TablasGrid th:last-child {
+        border-radius: 0 6px 0 0;
+    }
+
+    #TablasGrid th:only-child {
+        border-radius: 6px 6px 0 0;
+    }
+
+    #TablasGrid th {
+        background-color: #BEDFFB;
+        color: #434F5C;
+        border: 1px solid black;
     }

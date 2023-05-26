@@ -29,10 +29,14 @@
     <Folder Include="Pages\Auth\" />
     <Folder Include="Pages\Categorie\" />
     <Folder Include="Repositories\" />
+    <Folder Include="Pages\Investors\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\JGRFoundation.Shared\JGRFoundation.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Pages\Investors\" />
+  </ItemGroup>
 </Project>

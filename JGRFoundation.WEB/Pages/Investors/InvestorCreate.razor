@@ -1,0 +1,43 @@
+﻿@page "/investors/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Crear Inversor</h3>
+
+<InvestorForm @ref="investorForm" Investor="investor" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private Investor investor = new();
+    private InvestorForm? investorForm;
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+    private async Task CreateAsync()
+    {
+        var responseHttp = await repository.Post("/api/investors", investor);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+        {
+            Toast = true,
+            Position = SweetAlertPosition.TopEnd,
+            ShowConfirmButton = false,
+            Timer = 5000
+        });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Inversor creado con éxito.");
+    }
+
+    private void Return()
+    {
+        investorForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo("/investors");
+    }
+}

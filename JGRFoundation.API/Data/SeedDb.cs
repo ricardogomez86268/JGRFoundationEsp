@@ -26,7 +26,6 @@ namespace JGRFoundation.API.Data
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
-            await CheckCategoriesAsync();
             await CheckInvestorsAsync();
             await CheckPanelsAsync();
             await CheckRolesAsync();
@@ -82,8 +81,13 @@ namespace JGRFoundation.API.Data
             {
                 _context.Investors.AddRange(new List<Investor>()
                 {
-                    new Investor() { InvestorReference = "Invest1200" ,RatedPower = 1200},
-                    new Investor() { InvestorReference = "Invest3400" ,RatedPower = 3400}
+                    new Investor() { InvestorReference = "Invest1200", RatedPower = 1200 },
+                    new Investor() { InvestorReference = "Invest3400", RatedPower = 3400 }
+                });
+            }
+            return Task.CompletedTask;
+        }
+
         private Task CheckHomeAppliancesAsync()
         {
             if (!_context.HomeAppliances.Any())
@@ -101,14 +105,19 @@ namespace JGRFoundation.API.Data
         }
 
         private Task CheckPanelsAsync()
-        {
-            if (!_context.Panels.Any())
-            {
-                _context.Panels.AddRange(new List<Panel>()
                 {
-                    new Panel() { PanelReference = "Panel400",Power = 400},
-                    new Panel() { PanelReference = "Panel500",Power = 500 },
-                    new Panel() { PanelReference = "Panel600",Power = 600 }
+                    if (!_context.Panels.Any())
+                    {
+                        _context.Panels.AddRange(new List<Panel>()
+                        {
+                            new Panel() { PanelReference = "Panel400", Power = 400 },
+                            new Panel() { PanelReference = "Panel500", Power = 500 },
+                            new Panel() { PanelReference = "Panel600", Power = 600 }
+                        });
+                    }
+            return Task.CompletedTask;
+        }
+
         private Task CheckBatteriesAsync()
         {
             if (!_context.Batteries.Any())
@@ -124,31 +133,6 @@ namespace JGRFoundation.API.Data
 
             return Task.CompletedTask;
         }
-        private async Task CheckCategoriesAsync()
-        {
-            if (!_context.Categories.Any())
-            {
-                _context.Categories.Add(new Category { Name = "Apple" });
-                _context.Categories.Add(new Category { Name = "Autos" });
-                _context.Categories.Add(new Category { Name = "Belleza" });
-                _context.Categories.Add(new Category { Name = "Calzado" });
-                _context.Categories.Add(new Category { Name = "Comida" });
-                _context.Categories.Add(new Category { Name = "Cosmeticos" });
-                _context.Categories.Add(new Category { Name = "Deportes" });
-                _context.Categories.Add(new Category { Name = "Erótica" });
-                _context.Categories.Add(new Category { Name = "Ferreteria" });
-                _context.Categories.Add(new Category { Name = "Gamer" });
-                _context.Categories.Add(new Category { Name = "Hogar" });
-                _context.Categories.Add(new Category { Name = "Jardín" });
-                _context.Categories.Add(new Category { Name = "Jugetes" });
-                _context.Categories.Add(new Category { Name = "Lenceria" });
-                _context.Categories.Add(new Category { Name = "Mascotas" });
-                _context.Categories.Add(new Category { Name = "Nutrición" });
-                _context.Categories.Add(new Category { Name = "Ropa" });
-                _context.Categories.Add(new Category { Name = "Tecnología" });
-                await _context.SaveChangesAsync();
-            }
-        }      
        
         private async Task CheckRolesAsync()
         {
