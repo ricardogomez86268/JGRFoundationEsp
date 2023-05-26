@@ -1,4 +1,5 @@
 ﻿@page "/HomeCreate"
+@inject IJSRuntime JSRuntime
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -75,8 +76,50 @@ else
         </RecordsComplete>
     </GenericList>
 }
+<scrip>
+    navigator.geolocation = {
+        getCurrentPosition: function () {
+            return new Promise(function (resolve, reject) {
+                navigator.permissions.query({ name: 'geolocation' }).then(function (result) {
+                    if (result.state === 'granted' || result.state === 'prompt') {
+                        navigator._getCurrentPosition(resolve, reject);
+                    } else {
+                        reject(new Error('Permiso de geolocalización denegado.'));
+                    }
+                });
+            });
+        }
+    };
 
+    navigator._getCurrentPosition = navigator.getCurrentPosition;
+</scrip>
 @code {
+
+    string latitud;
+    string longitud;
+    async Task ObtenerCoordenadas()
+    {
+        try
+        {
+            var position = await JSRuntime.InvokeAsync<Position>("navigator.geolocation.getCurrentPosition");
+            latitud = position.Coords.Latitude.ToString();
+            longitud = position.Coords.Longitude.ToString();
+        }
+        catch (Exception ex){}
+    }
+
+    public class Position
+    {
+        public Coords Coords { get; set; }
+    }
+
+    public class Coords
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+
+
     public List<TemporalHome>? temporalHomes { get; set; }
     private float sumQuantity;
     private decimal sumValue;
@@ -112,6 +155,10 @@ else
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true
             });
+
+        //navigator.geolocation.getCurrentPosition();
+        ObtenerCoordenadas();
+        var position = await JSRuntime.InvokeAsync<object>("navigatorInterop.getCurrentPosition", DotNetObjectReference.Create(this));
 
         var confirm = string.IsNullOrEmpty(result.Value);
         if (confirm)
