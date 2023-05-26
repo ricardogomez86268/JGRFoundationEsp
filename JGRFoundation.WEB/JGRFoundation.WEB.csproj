@@ -27,9 +27,10 @@
     <Folder Include="Auth\" />
     <Folder Include="Helpers\" />
     <Folder Include="Pages\Auth\" />
-    <Folder Include="Pages\Categorie\" />
+    <Folder Include="Pages\Categories\" />
     <Folder Include="Repositories\" />
     <Folder Include="Pages\Batteries\" />
+    <Folder Include="Pages\HomeAppliances\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,5 +39,6 @@
 
   <ItemGroup>
     <None Remove="Pages\Batteries\" />
+    <None Remove="Pages\HomeAppliances\" />
   </ItemGroup>
 </Project>
