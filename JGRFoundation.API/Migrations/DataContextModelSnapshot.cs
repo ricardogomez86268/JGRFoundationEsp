@@ -73,33 +73,6 @@ namespace JGRFoundation.API.Migrations
                     b.ToTable("Batteries");
                 });
 
-            modelBuilder.Entity("JGRFoundation.Shared.Entities.Battery", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BatteryReference")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("CapacityAmperageHour")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Voltage")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BatteryReference")
-                        .IsUnique();
-
-                    b.ToTable("Batteries");
-                });
-
             modelBuilder.Entity("JGRFoundation.Shared.Entities.Home", b =>
                 {
                     b.Property<int>("Id")

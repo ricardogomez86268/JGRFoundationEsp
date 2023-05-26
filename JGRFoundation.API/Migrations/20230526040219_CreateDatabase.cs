@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace JGRFoundation.API.Migrations
 {
     /// <inheritdoc />
-    public partial class create : Migration
+    public partial class CreateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -69,19 +69,6 @@ namespace JGRFoundation.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Batteries", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -232,6 +219,79 @@ namespace JGRFoundation.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Homes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Coordinate = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Homes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Homes_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TemporalHomes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Coordinate = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ApplianceId = table.Column<int>(type: "int", nullable: false),
+                    QuantityByAppliance = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TemporalHomes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TemporalHomes_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TemporalHomes_HomeAppliances_ApplianceId",
+                        column: x => x.ApplianceId,
+                        principalTable: "HomeAppliances",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HomeDetail",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    HomeId = table.Column<int>(type: "int", nullable: false),
+                    ApplianceId = table.Column<int>(type: "int", nullable: false),
+                    QuantityByAppliance = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HomeDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HomeDetail_HomeAppliances_ApplianceId",
+                        column: x => x.ApplianceId,
+                        principalTable: "HomeAppliances",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_HomeDetail_Homes_HomeId",
+                        column: x => x.HomeId,
+                        principalTable: "Homes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -278,16 +338,31 @@ namespace JGRFoundation.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_Name",
-                table: "Categories",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_HomeAppliances_Name",
                 table: "HomeAppliances",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HomeDetail_ApplianceId",
+                table: "HomeDetail",
+                column: "ApplianceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HomeDetail_HomeId",
+                table: "HomeDetail",
+                column: "HomeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Homes_Id",
+                table: "Homes",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Homes_UserId",
+                table: "Homes",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Investors_InvestorReference",
@@ -300,6 +375,16 @@ namespace JGRFoundation.API.Migrations
                 table: "Panels",
                 column: "PanelReference",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemporalHomes_ApplianceId",
+                table: "TemporalHomes",
+                column: "ApplianceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemporalHomes_UserId",
+                table: "TemporalHomes",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -324,10 +409,7 @@ namespace JGRFoundation.API.Migrations
                 name: "Batteries");
 
             migrationBuilder.DropTable(
-                name: "Categories");
-
-            migrationBuilder.DropTable(
-                name: "HomeAppliances");
+                name: "HomeDetail");
 
             migrationBuilder.DropTable(
                 name: "Investors");
@@ -336,7 +418,16 @@ namespace JGRFoundation.API.Migrations
                 name: "Panels");
 
             migrationBuilder.DropTable(
+                name: "TemporalHomes");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Homes");
+
+            migrationBuilder.DropTable(
+                name: "HomeAppliances");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

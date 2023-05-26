@@ -32,6 +32,7 @@
     <Folder Include="Pages\Panels\" />
     <Folder Include="Pages\Batteries\" />
     <Folder Include="Pages\HomeAppliances\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
   <ItemGroup>
