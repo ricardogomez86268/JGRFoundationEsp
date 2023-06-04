@@ -1,7 +1,7 @@
 using Blazored.Modal;
 using CurrieTechnologies.Razor.SweetAlert2;
 using JGRFoundation.WEB.Auth;
-using JGRFoundation.WEB.Repositories;
+using JGRFoundation.Infrastructure;
 using JGRFoundation.WEB;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;

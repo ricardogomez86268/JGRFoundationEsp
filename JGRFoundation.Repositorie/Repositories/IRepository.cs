@@ -1,4 +1,4 @@
-﻿namespace JGRFoundation.WEB.Repositories
+﻿namespace JGRFoundation.Infrastructure
 {
     public interface IRepository
     {

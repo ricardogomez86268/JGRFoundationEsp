@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace JGRFoundation.WEB.Repositories
+namespace JGRFoundation.Infrastructure
 {
     public class HttpResponseWrapper<T>
     {

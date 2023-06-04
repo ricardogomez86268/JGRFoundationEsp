@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
-namespace JGRFoundation.WEB.Repositories
+namespace JGRFoundation.Infrastructure
 {
     public class Repository : IRepository
     {
