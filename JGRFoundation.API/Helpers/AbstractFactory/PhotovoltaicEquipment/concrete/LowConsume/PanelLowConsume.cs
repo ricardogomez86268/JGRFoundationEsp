@@ -4,7 +4,7 @@
     {
         public override string SelectPanel()
         {
-            return "Seleccion panel alto voltaje";
+            return "Seleccion panel bajo voltaje";
         }
     }
 }
