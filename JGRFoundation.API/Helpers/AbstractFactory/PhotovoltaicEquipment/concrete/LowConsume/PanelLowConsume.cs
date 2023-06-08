@@ -1,6 +1,6 @@
 ﻿namespace JGRFoundation.API.Helpers.AbstractFactory.PhotovoltaicEquipment.concrete.LowConsume
 {
-    public class PanelLowConsume : Panel
+    public class PanelLowConsume : PanelAbstract
     {
         public override string SelectPanel()
         {

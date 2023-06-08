@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 namespace JGRFoundation.API.Controller
 {
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/api/General")]
     public class GeneralController : ControllerBase
     {
