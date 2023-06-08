@@ -18,7 +18,7 @@ namespace JGRFoundation.API.Controller
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("GetPhotovoltaicEquipmentHighConsume")]
         public async Task<ActionResult> GetPhotovoltaicEquipmentHighConsumeAsync()
         {
             try
@@ -38,7 +38,7 @@ namespace JGRFoundation.API.Controller
             }
         }
 
-        [HttpGet]
+        [HttpGet("GetPhotovoltaicEquipmentLowConsume")]
         public async Task<ActionResult> GetPhotovoltaicEquipmentLowConsumeAsync()
         {
             try
