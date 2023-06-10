@@ -1,4 +1,5 @@
-﻿using JGRFoundation.Shared.Entities;
+﻿using JGRFoundation.Shared.DTOs;
+using JGRFoundation.Shared.Entities;
 using System.Xml.Linq;
 
 namespace JGRFoundation.API.Helpers.Builder
@@ -31,9 +32,11 @@ namespace JGRFoundation.API.Helpers.Builder
             return this;
         }
 
-        public string Build()
+        public QueryDTO Build()
         {
-            return $"UPDATE {tableName} SET {string.Join(", ", columns)} WHERE {condition}";
+            var QueryDTO = new QueryDTO();
+            QueryDTO.Query = $"UPDATE {tableName} SET {string.Join(", ", columns)} WHERE {condition}";
+            return QueryDTO;
         }
     }
 }

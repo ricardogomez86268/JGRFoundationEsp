@@ -33,8 +33,8 @@ namespace JGRFoundation.API.Controller
                 {
                     queryBuilder.Set(columns);
                 }
-                string queryUpdate = queryBuilder.Build();
-                return await Task.FromResult(Ok(_context.Database.ExecuteSqlRaw(queryUpdate)));
+                var queryUpdate = queryBuilder.Build();
+                return await Task.FromResult(Ok(_context.Database.ExecuteSqlRaw(queryUpdate.Query)));
             }
             catch (Exception ex)
             {
@@ -55,8 +55,8 @@ namespace JGRFoundation.API.Controller
                 {
                     queryBuilder.Set(columns);
                 }
-                string queryUpdate = queryBuilder.Build();
-                return await Task.FromResult(Ok(_context.Database.ExecuteSqlRaw(queryUpdate)));
+                var queryUpdate = queryBuilder.Build();
+                return await Task.FromResult(Ok(_context.Database.ExecuteSqlRaw(queryUpdate.Query)));
             }
             catch (Exception ex)
             {
@@ -71,13 +71,14 @@ namespace JGRFoundation.API.Controller
             {
                 var directorQuery = new DirectorQuery();
                 var queryBuilder = new QueryBuilderConcrete();
+                directorQuery.constructBatteries(queryBuilder);
                 queryBuilder.Where(queryUpdateDTO.condition);
                 foreach (string columns in queryUpdateDTO.columns)
                 {
                     queryBuilder.Set(columns);
                 }
-                string queryUpdate = queryBuilder.Build();
-                return await Task.FromResult(Ok(_context.Database.ExecuteSqlRaw(queryUpdate)));
+                var queryUpdate = queryBuilder.Build();
+                return await Task.FromResult(Ok(_context.Database.ExecuteSqlRaw(queryUpdate.Query)));
             }
             catch (Exception ex)
             {
