@@ -1,9 +1,6 @@
 ﻿using JGRFoundation.API.Data;
-using JGRFoundation.API.Helpers;
 using JGRFoundation.API.Helpers.Builder;
 using JGRFoundation.Shared.DTOs;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

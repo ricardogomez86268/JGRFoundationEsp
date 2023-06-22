@@ -6,11 +6,12 @@ using JGRFoundation.API.Data;
 using JGRFoundation.API.Helpers;
 using JGRFoundation.Shared.DTOs;
 using JGRFoundation.Shared.Entities;
+using JGRFoundation.API.Helpers.Adapter;
 
 namespace JGRFoundation.API.Controller
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/api/investors")]
     public class InvestorsController : ControllerBase
     {
@@ -66,6 +67,18 @@ namespace JGRFoundation.API.Controller
             }
 
             return Ok(investor);
+        }
+
+        [HttpGet("Old{id:int}")]
+        public async Task<ActionResult> GetOldAsync(int id)
+        {
+            var investor = await _context.Investors
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (investor is null)
+                return NotFound();
+
+            var investorOldDto = new InvestorAdapter(investor);
+            return Ok(investorOldDto);
         }
 
 
