@@ -14,12 +14,10 @@ namespace JGRFoundation.API.Controller
     public class PhotovoltaicEquipmentController : ControllerBase
     {
         private readonly DataContext _context;
-        private readonly CalculatorInstallationContext _calculatorInstallationContext;
 
         public PhotovoltaicEquipmentController(DataContext context)
         {
             _context = context;
-            _calculatorInstallationContext = new CalculatorInstallationContext();
         }
 
         [HttpGet("GetPhotovoltaicEquipmentHighConsume")]
@@ -68,6 +66,7 @@ namespace JGRFoundation.API.Controller
         {
             try
             {
+                CalculatorInstallationContext _calculatorInstallationContext;
                 IPanelInstallationStrategy strategy;
                 if (installationPanelDTO.installationStrategy == "Paralle")
                 {
@@ -81,10 +80,10 @@ namespace JGRFoundation.API.Controller
                 {
                     return BadRequest("Estrategia de envío no válida.");
                 }
-                _calculatorInstallationContext.SetPanelInstallationStrategy(strategy);
-                int QPanel = _calculatorInstallationContext.executeStrategy(installationPanelDTO);
+                _calculatorInstallationContext = new CalculatorInstallationContext(strategy);
+                int QuantityPanel = _calculatorInstallationContext.executeStrategy(installationPanelDTO);
 
-                return Ok(QPanel);
+                return Ok(QuantityPanel);
             }
             catch (Exception ex)
             {
