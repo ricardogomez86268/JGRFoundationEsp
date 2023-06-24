@@ -19,8 +19,8 @@ namespace JGRFoundation.API.Helpers.Adapter
 
         public int RPower
         {
-            get { return _Investor.RatedPower; }
-            set { _Investor.RatedPower = value; }
+            get { return _Investor.RatedPower * 20; }
+            set { _Investor.RatedPower = value * 20; }
         }
     }
 }
