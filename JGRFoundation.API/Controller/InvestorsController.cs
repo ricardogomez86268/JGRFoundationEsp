@@ -70,7 +70,7 @@ namespace JGRFoundation.API.Controller
         }
 
         [HttpGet("Old{id:int}")]
-        public async Task<ActionResult> GetOldAsync(int id)
+        public async Task<ActionResult> GetOldInvestorAsync(int id)
         {
             var investor = await _context.Investors
                 .FirstOrDefaultAsync(x => x.Id == id);
